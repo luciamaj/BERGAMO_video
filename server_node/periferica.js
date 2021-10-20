@@ -208,6 +208,12 @@ io.on('connection', function (socket) {
     }.bind(this));
 
     socket.on('approfondimento', function (data) {
+        console.log("appro", data);
+        sendUdpMessage(data);
+    }.bind(this));
+
+    socket.on('back', function (data) {
+        console.log("back", data);
         sendUdpMessage(data);
     }.bind(this));
 
@@ -319,10 +325,15 @@ function sendPeriferica(error) {
 }
 
 function sendUdpMessage(data) {
-    const messageBuffer = Buffer.from(data);
-    serverUDP.send(messageBuffer, 0, messageBuffer.length, configIni.bs.port, configIni.bs.ip);
-
-    fsUtilites.writeLogFile(`send udp to ${configIni.bs.ip}:${configIni.bs.port}, ${data}`);
+    if (data) {
+        console.log("1", data);
+        const messageBuffer = Buffer.from(data);
+        serverUDP.send(messageBuffer, 0, messageBuffer.length, configIni.bs.port, configIni.bs.ip);
+    
+        fsUtilites.writeLogFile(`send udp to ${configIni.bs.ip}:${configIni.bs.port}, ${data}`);
+    } else {
+        console.log("data is undefined");
+    }
 }
 
 exports.sendPeriferica = sendPeriferica;
