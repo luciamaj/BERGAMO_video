@@ -1,0 +1,1 @@
+C:\xampp\Admin\bin\programs\nssm install REGIA_server_periferica "C:\Program Files\nodejs\node.exe" "C:\xampp\Admin\server_node\periferica.js" Start Automatic

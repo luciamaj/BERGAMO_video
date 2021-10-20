@@ -1,0 +1,1 @@
+schtasks /create /sc ONLOGON /DELAY 0000:05 /TN REGIA_hide_mouse /TR "C:\xampp\Admin\bin\scripts\show_mouse\show_mouse.exe"
