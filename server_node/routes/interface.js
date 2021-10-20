@@ -4,7 +4,7 @@ const ini = require('ini');
 const configIni = ini.parse(fs.readFileSync(__basedir + "/config.ini", 'utf-8'));
 const commands = require(__basedir + "/modules/commands.js");
 
-router.get('/', function(request,response) {
+router.post('/', function(request,response) {
   let backupConfig = "null";
 
   try { 

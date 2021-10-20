@@ -17,8 +17,8 @@ const dgram = require('dgram');
 const passwordProtected = require('express-password-protect');
 
 const config = {
-    username: "fellini",
-    password: "Fellini@202021",
+    username: "bergamo",
+    password: "900",
     maxAge: 120000
 }
 
