@@ -12,6 +12,7 @@ const fsUtilites = require('./modules/fs-utilities.js');
 const path = require('path');
 var ping = require('ping');
 var cors = require('cors');
+const dgram = require('dgram');
 
 const passwordProtected = require('express-password-protect');
 
@@ -38,6 +39,7 @@ app.use(express.static(configIni.app.adminPath + '/public'));
 
 const interface = require('./routes/interface')
 app.use('/', interface);
+
 
 // IMPOSTAZIONI PER IL GIT
 
@@ -104,8 +106,21 @@ var server = app.listen(port, function () {
     var host = server.address().address
     var port = server.address().port
 
-    console.log("Example app listening at http://%s:%s", host, port)
+    console.log("Example app listening at http://%s:%s", host, port);
 });
+
+let serverUDP = dgram.createSocket('udp4');
+
+serverUDP.on('listening', function () {
+    console.log("dgram listening", 5000);
+});
+
+serverUDP.on('message', function(msg) {
+    console.log(msg);
+    sendUdpMessage('appro');
+});
+
+serverUDP.bind(5000);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname + '/layout/index.html'));
@@ -190,6 +205,10 @@ io.on('connection', function (socket) {
         isAppOffline = false;
         tsunamiSocket = socket;
         emitPeriferica();
+    }.bind(this));
+
+    socket.on('approfondimento', function (data) {
+        sendUdpMessage(data);
     }.bind(this));
 
     socket.on('disconnect', function () {
@@ -297,6 +316,13 @@ function getAppPage() {
 function sendPeriferica(error) {
     console.log('sono qui con questo errore', error);
     emitPeriferica(error)
+}
+
+function sendUdpMessage(data) {
+    const messageBuffer = Buffer.from(data);
+    serverUDP.send(messageBuffer, 0, messageBuffer.length, configIni.bs.port, configIni.bs.ip);
+
+    fsUtilites.writeLogFile(`send udp to ${configIni.bs.ip}:${configIni.bs.port}, ${data}`);
 }
 
 exports.sendPeriferica = sendPeriferica;
