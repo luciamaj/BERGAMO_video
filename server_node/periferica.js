@@ -83,7 +83,7 @@ async function getLastCommit() {
 let centrale = ioclient(configIni.connection.centrale);
 let port = configIni.connection.io;
 let clientSocket = null;
-let tsunamiSocket = null;
+let appSocket = null;
 
 //INFO MACHINE
 const machineName = os.hostname();
@@ -117,6 +117,14 @@ serverUDP.on('listening', function () {
 
 serverUDP.on('message', function(msg) {
     console.log(msg);
+    if (msg == 'videoEnd') {
+        if (appSocket) {
+            fsUtilites.writeLogFile("invio videoEnd a client");
+            appSocket.emit("videoEnd");
+        } else {
+            console.log("something went wrong videoEnd, appSocket does not exists");
+        }
+    }
     sendUdpMessage('appro');
 });
 
@@ -155,11 +163,8 @@ centrale.on('cmd', async function (data) {
     console.log(data, `ho ricevuto il cmd from central`);
     fsUtilites.writeLogFile('ho ricevuto il cmd from central ' + data);
 
-    if(data == 'tsunamiStart') {
-        sendTsunamiSocket();
-    } else {
-        await commands.executeCmd(data);
-    }
+
+    await commands.executeCmd(data);
 
     refresh();
 }.bind(this));
@@ -203,7 +208,7 @@ io.on('connection', function (socket) {
     socket.on('inside', function () {
         fsUtilites.writeLogFile('sono inside');
         isAppOffline = false;
-        tsunamiSocket = socket;
+        appSocket = socket;
         emitPeriferica();
     }.bind(this));
 
@@ -217,12 +222,17 @@ io.on('connection', function (socket) {
         sendUdpMessage(data);
     }.bind(this));
 
+    socket.on('videoEnd', function (data) {
+        console.log("back", data);
+        sendUdpMessage(data);
+    }.bind(this));
+
     socket.on('disconnect', function () {
 
         // TODO: Oltre a fare solo l'update di quando mi sconnetto devo reinviare le mie info con le segnalazioni
         console.log(`${socket.id} disconnected`);
 
-        if (socket == clientSocket || socket == tsunamiSocket) {
+        if (socket == clientSocket || socket == appSocket) {
             fsUtilites.writeLogFile('disconnessa applicazione ' + baseAppUrl + getAppPage());
             clientSocket = undefined;
             isAppOffline = true;
@@ -245,15 +255,6 @@ function sendChangePage(url) {
 
     if (clientSocket) {
         configIni.app.prepend ? clientSocket.emit('loadPage', urlComplete + configIni.app.prepend) : clientSocket.emit('loadPage', url); 
-    }
-}
-
-function sendTsunamiSocket() {
-    if (tsunamiSocket) {
-        fsUtilites.writeLogFile("invio tsunami start a client");
-        tsunamiSocket.emit("tsunamiStart");
-    } else {
-        console.log("something went wrong tsunami");
     }
 }
 
