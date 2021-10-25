@@ -116,7 +116,6 @@ serverUDP.on('listening', function () {
 });
 
 serverUDP.on('message', function(msg) {
-    console.log(msg);
     if (msg == 'videoEnd') {
         if (appSocket) {
             fsUtilites.writeLogFile("invio videoEnd a client");
@@ -125,7 +124,6 @@ serverUDP.on('message', function(msg) {
             console.log("something went wrong videoEnd, appSocket does not exists");
         }
     }
-    sendUdpMessage('appro');
 });
 
 serverUDP.bind(5000);
