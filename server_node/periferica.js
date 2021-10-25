@@ -208,6 +208,7 @@ io.on('connection', function (socket) {
         isAppOffline = false;
         appSocket = socket;
         emitPeriferica();
+        console.log("il client è connesso")
     }.bind(this));
 
     socket.on('approfondimento', function (data) {
