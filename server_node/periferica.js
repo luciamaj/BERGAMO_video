@@ -40,45 +40,9 @@ app.use(express.static(configIni.app.adminPath + '/public'));
 const interface = require('./routes/interface')
 app.use('/', interface);
 
-
-// IMPOSTAZIONI PER IL GIT
-
-/*const simpleGit = require('simple-git/promise');
-const options = simpleGit.SimpleGitOptions = {
-    baseDir: configIni.git.path,
-    binary: 'git',
-    maxConcurrentProcesses: 6
-}
-const git = simpleGit(options);
-
-app.use(bodyParser.urlencoded({
-    extended: true
-}));*/
-
 app.use(bodyParser.json());
 
 // FINE EXPRESS
-
-try {
-    if (fs.existsSync(configIni.git.path)) {
-        simpleGit((configIni.git.path))
-    }
-} catch (err) {
-    fsUtilites.writeLogFile(err);
-    console.error(err)
-}
-
-async function getLastCommit() {
-    try {
-        let result = await simpleGit.raw(['rev-parse', 'HEAD']);
-        console.log("THIS IS THE LAST COMMIT", result);
-        return result;
-    } catch (err) {
-        console.log('la directory ' + configIni.git.path + ' non esite o non e una repo git.');
-        fsUtilites.writeLogFile(configIni.git.path);
-        return null;
-    }
-}
 
 let centrale = ioclient(configIni.connection.centrale);
 let port = configIni.connection.io;
@@ -264,10 +228,7 @@ function refresh() {
     }
 }
 
-async function emitPeriferica(errorOp) {
-    let lastCommit = await getLastCommit();
-    infoDebug.lastCommit = lastCommit;
-    
+async function emitPeriferica(errorOp) {    
     if (errorOp) {
         infoDebug["errorOperation"] = {'success': false, error: errorOp};
     } else {
