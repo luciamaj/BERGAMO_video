@@ -203,8 +203,8 @@ io.on('connection', function (socket) {
         }
     }.bind(this));
 
-    socket.on('inside', function () {
-        fsUtilites.writeLogFile('sono inside');
+    socket.on('client', function () {
+        fsUtilites.writeLogFile('sono client');
         isAppOffline = false;
         appSocket = socket;
         emitPeriferica();

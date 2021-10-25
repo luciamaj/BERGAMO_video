@@ -25690,5 +25690,4 @@
 25/10/2021, 12:24:54 send udp to 192.168.0.122:5000, appro
 25/10/2021, 12:25:08 central is off
 25/10/2021, 12:26:02 central is off
-2021-10-25 12:39:59 ReferenceError: simpleGit is not defined
-2021-10-25 12:40:19 central is off
+25/10/2021, 12:49:07 send udp to 192.168.0.122:5000, 1918
